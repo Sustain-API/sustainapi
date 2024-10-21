@@ -6,7 +6,7 @@ on:
       - master  # Or main, only deploy on the main/master branch
   pull_request:
     branches:
-      - master  # Handle staging from the develop branch
+      - develop  # Handle staging from the develop branch
 
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -37,10 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Deploy to Railway Production
+      - name: Install Railway CLI
         run: |
-          curl -X POST "https://fpaychain.up.railway.app/${{ env.RAILWAY_PROJECT_ID }}/deploy" \
-          -H "Authorization: Bearer ${{ env.RAILWAY_API_TOKEN }}"
+          curl -sSL https://railway.app/install | sh
+      
+      - name: Deploy to Railway Production
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway up --project ${{ env.RAILWAY_PROJECT_ID }} --env production  # Deploy using Railway CLI to production
 
       - name: Notify Success
         run: echo "Production deployment successful!"
@@ -53,10 +58,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Deploy to Railway Staging
+      - name: Install Railway CLI
         run: |
-          curl -X POST "https://fpaychain.up.railway.app/${{ env.RAILWAY_STAGING_PROJECT_ID }}/deploy" \
-          -H "Authorization: Bearer ${{ env.RAILWAY_API_TOKEN }}"
+          curl -sSL https://railway.app/install | sh
+      
+      - name: Deploy to Railway Staging
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway up --project ${{ env.RAILWAY_STAGING_PROJECT_ID }} --env staging  # Deploy using Railway CLI to staging
 
       - name: Notify Success
         run: echo "Staging deployment successful!"
