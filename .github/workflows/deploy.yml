@@ -37,17 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Railway CLI
+      - name: Install Railway CLI via npm
         run: npm install -g @railway/cli
 
-      - name: Login to Railway
-        run: railway login --token ${{ secrets.RAILWAY_API_TOKEN }}
-
-      - name: Link Railway Project
-        run: railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
-
+      
       - name: Deploy to Railway Production
-        run: railway up --env production  # Deploy to production
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
 
       - name: Notify Success
         run: echo "Production deployment successful!"
@@ -61,16 +59,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Railway CLI
-        run: npm install -g @railway/cli
+        run: |
+          curl -sSL https://railway.app/install | sh
       
-      - name: Login to Railway
-        run: railway login --token ${{ secrets.RAILWAY_API_TOKEN }}
-
-      - name: Link Railway Staging Project
-        run: railway link --project ${{ secrets.RAILWAY_STAGING_PROJECT_ID }}
-
       - name: Deploy to Railway Staging
-        run: railway up --env staging  # Deploy using Railway CLI to staging
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway up --project ${{ env.RAILWAY_STAGING_PROJECT_ID }} --env staging  # Deploy using Railway CLI to staging
 
       - name: Notify Success
         run: echo "Staging deployment successful!"
