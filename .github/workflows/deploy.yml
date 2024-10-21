@@ -40,7 +40,7 @@ jobs:
       - name: Install Railway CLI
         shell: bash
         run: |
-          curl -sSL https://railway.app/install | sh
+          curl -sSL https://railway.app/install | bash
       
       - name: Deploy to Railway Production
         env:
