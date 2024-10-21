@@ -1,0 +1,12 @@
+variables:
+  NODE_ENV: production
+  npm_config_legacy_peer_deps: true
+
+build:
+  steps:
+    - npm install
+    - npm run build
+
+deploy:
+  steps:
+    - npm start
