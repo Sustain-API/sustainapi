@@ -38,6 +38,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Railway CLI
+        shell: bash
         run: |
           curl -sSL https://railway.app/install | sh
       
