@@ -37,10 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Railway CLI
-        shell: bash
-        run: |
-          curl -fsSL https://cli.railway.app/install.sh | bash
+      - name: Install Railway CLI via npm
+        run: npm install -g railway
+
       
       - name: Deploy to Railway Production
         env:
