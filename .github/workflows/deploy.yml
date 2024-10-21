@@ -45,7 +45,7 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway up ${{ env.RAILWAY_PROJECT_ID }}
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
 
       - name: Notify Success
         run: echo "Production deployment successful!"
@@ -70,4 +70,3 @@ jobs:
 
       - name: Notify Success
         run: echo "Staging deployment successful!"
-        
