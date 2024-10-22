@@ -18,6 +18,12 @@ jobs:
       - name: Install Railway CLI via npm
         run: npm install -g @railway/cli
 
+      - name: Link Railway Project
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }} --service ${{ secrets.RAILWAY_SERVICE_ID }}
+
       # Step 3: Create a temporary Railway environment for this PR
       - name: Create Temporary Environment
         env:
