@@ -47,7 +47,7 @@ jobs:
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
         run: |
-          railway link --project-id ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
 
       - name: Deploy to Railway Production
         env:
