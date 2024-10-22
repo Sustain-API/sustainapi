@@ -47,7 +47,8 @@ jobs:
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
         run: |
-          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
+
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }} --service ${{ secrets.RAILWAY_SERVICE_ID }}
 
       - name: Deploy to Railway Production
         env:
@@ -74,11 +75,12 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
+
       - name: Link Railway Staging Project
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway link --project-id ${{ secrets.RAILWAY_STAGING_PROJECT_ID }}
+          railway link --project ${{ secrets.RAILWAY_STAGING_PROJECT_ID }}
 
       - name: Deploy to Railway Staging
         env:
