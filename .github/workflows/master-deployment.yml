@@ -1,0 +1,40 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - master  # This triggers the workflow when a push is made to the master branch
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
+  RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+  RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Railway CLI via npm
+        run: npm install -g @railway/cli
+
+      - name: Link Railway Project
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }} --service ${{ secrets.RAILWAY_SERVICE_ID }}
+
+      - name: Deploy to Railway Production
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway up --ci
+
+      - name: Notify Success
+        run: echo "Production deployment successful!"
