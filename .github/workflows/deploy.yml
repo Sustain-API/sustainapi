@@ -58,7 +58,7 @@ jobs:
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
         run: |
-          railway up --ci
+          npx railway up --ci
 
       - name: Notify Success
         run: echo "Production deployment successful!"
