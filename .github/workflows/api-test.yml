@@ -1,0 +1,58 @@
+name: CI Pipeline with Temporary Railway Deployment
+
+on:
+  push:
+    branches:
+      - master  # Run this workflow on PRs targeting master
+
+jobs:
+  deploy-and-test:
+    name: Deploy and Test API
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - uses: actions/checkout@v2
+
+      # Step 2: Install Railway CLI
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      # Step 3: Create a temporary Railway environment for this PR
+      - name: Deploy to Railway
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          # Create a temporary environment
+          railway environment create temporary-env-${{ github.event.number }}
+          # Link the current PR branch to this new environment
+          railway up --ci --branch ${{ github.head_ref }} --environment temporary-env-${{ github.event.number }}
+
+      # Step 4: Wait for the deployment to complete (customize this as needed)
+      - name: Wait for deployment
+        run: sleep 30  # Increase this if the deployment takes longer
+
+      # Step 5: Get the URL of the temporary environment
+      - name: Get Environment URL
+        id: get-url
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          RAILWAY_URL=$(railway status --json | jq -r '.service.environments[] | select(.name=="temporary-env-${{ github.event.number }}").url')
+          echo "Temporary URL: $RAILWAY_URL"
+          echo "::set-output name=preview_url::$RAILWAY_URL"
+
+      # Step 6: Run API Tests on the Preview Environment
+      - name: Test API Endpoints
+        run: |
+          echo "Testing API at ${{ steps.get-url.outputs.preview_url }}"
+          curl -f ${{ steps.get-url.outputs.preview_url }}/api/health || exit 1
+          curl -f ${{ steps.get-url.outputs.preview_url }}/api/users || exit 1
+
+      
+      - name: Delete Temporary Environment
+        if: always()  # Ensure this runs even if tests fail
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          railway environment delete temporary-env-${{ github.event.number }}

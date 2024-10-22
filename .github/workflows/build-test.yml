@@ -1,12 +1,14 @@
-name: CI/CD Pipeline
+name: Automated Tests
 
 on:
+
   push:
     branches:
-      - master  # Or 'main', only deploy on the main/master branch
+      - master
+
   pull_request:
     branches:
-      - develop  # Handle staging from the develop branch
+      - master 
 
 jobs:
   test:
@@ -14,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      
       - uses: actions/checkout@v2
 
       - name: Cache node_modules
@@ -25,7 +28,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm install  # Or adjust for your environment (pip install for Python, etc.)
+        run: npm ci
 
       - name: Run Tests
-        run: npm run test  # Adjust based on your project
+        run: npm run test
