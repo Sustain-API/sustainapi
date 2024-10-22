@@ -48,8 +48,8 @@ jobs:
           RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}  # Make sure to add this secret in GitHub
           RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}          # Add this secret if necessary
         run: |
-          railway up --project ${{ secrets.RAILWAY_PROJECT_ID }} --service ${{ secrets.RAILWAY_SERVICE_ID }} --environment ${{ secrets.RAILWAY_ENVIRONMENT_ID }} --ci
-
+          railway up --ci
+          
       - name: Notify Success
         run: echo "Production deployment successful!"
 
