@@ -23,7 +23,7 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway environment create environment-${{ github.event.number }}
+          railway environment create ${{ github.event.number }}
       
       # Step 4: Deploy the PR to the temporary environment
       - name: Deploy to Railway
