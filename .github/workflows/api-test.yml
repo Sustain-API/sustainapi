@@ -30,7 +30,7 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway up --ci --environment staging
+          railway environment
 
       # Step 5: Wait for the deployment to complete (customize this as needed)
       - name: Wait for deployment
