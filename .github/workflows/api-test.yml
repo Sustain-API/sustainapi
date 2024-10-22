@@ -1,4 +1,4 @@
-name: CI Pipeline with Temporary Railway Deployment
+name: CI Pipeline with Railway Staging Deployment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-and-test:
-    name: Deploy and Test API
+    name: Deploy to Staging and Test API
     runs-on: ubuntu-latest
 
     steps:
@@ -18,51 +18,37 @@ jobs:
       - name: Install Railway CLI via npm
         run: npm install -g @railway/cli
 
+      # Step 3: Link to the Railway Project and Service
       - name: Link Railway Project
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
           railway link --project ${{ secrets.RAILWAY_PROJECT_ID }} --service ${{ secrets.RAILWAY_SERVICE_ID }}
 
-      # Step 3: Create a temporary Railway environment for this PR
-      - name: Create Temporary Environment
+      # Step 4: Deploy the PR branch to the staging environment
+      - name: Deploy to Railway Staging
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway environment create ${{ github.event.number }}
-      
-      # Step 4: Deploy the PR to the temporary environment
-      - name: Deploy to Railway
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          railway up --ci --branch ${{ github.head_ref }} --environment temporary-environment-${{ github.event.number }}
+          railway up --ci --branch ${{ github.head_ref }} --environment staging
 
       # Step 5: Wait for the deployment to complete (customize this as needed)
       - name: Wait for deployment
         run: sleep 30  # Increase this if the deployment takes longer
 
-      # Step 6: Get the URL of the temporary environment
-      - name: Get Environment URL
+      # Step 6: Get the URL of the staging environment
+      - name: Get Staging Environment URL
         id: get-url
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          RAILWAY_URL=$(railway status --json | jq -r '.service.environments[] | select(.name=="temporary-env-${{ github.event.number }}").url')
-          echo "Temporary URL: $RAILWAY_URL"
-          echo "::set-output name=preview_url::$RAILWAY_URL"
+          RAILWAY_URL=$(railway status --json | jq -r '.service.environments[] | select(.name=="staging").url')
+          echo "Staging URL: $RAILWAY_URL"
+          echo "::set-output name=staging_url::$RAILWAY_URL"
 
-      # Step 7: Run API Tests on the Preview Environment
+      # Step 7: Test API Endpoints on the Staging Environment
       - name: Test API Endpoints
         run: |
-          echo "Testing API at ${{ steps.get-url.outputs.preview_url }}"
-          curl -f ${{ steps.get-url.outputs.preview_url }}/api/health || exit 1
-          curl -f ${{ steps.get-url.outputs.preview_url }}/api/users || exit 1
-
-      # Step 8: Clean up the temporary environment (optional)
-      - name: Delete Temporary Environment
-        if: always()  # Ensure this runs even if tests fail
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          railway environment delete environment-${{ github.event.number }}
+          echo "Testing API at ${{ steps.get-url.outputs.staging_url }}"
+          curl -f ${{ steps.get-url.outputs.staging_url }}/api/health || exit 1
+          curl -f ${{ steps.get-url.outputs.staging_url }}/api/users || exit 1
