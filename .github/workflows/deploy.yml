@@ -51,7 +51,7 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Login to Railway
-        run: echo ${{ secrets.RAILWAY_API_TOKEN }} | railway login --token
+        run: echo ${{ secrets.RAILWAY_API_TOKEN }} | railway login
 
       - name: Link Railway Project
         env:
