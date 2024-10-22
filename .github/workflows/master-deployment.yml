@@ -29,9 +29,12 @@ jobs:
 
       - name: Deploy to Railway Production
         env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway up --ci
+          railway up --ci --env production
 
       - name: Notify Success
         run: echo "Production deployment successful!"
