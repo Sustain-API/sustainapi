@@ -34,7 +34,7 @@ jobs:
           POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway up --ci --project ${{ secrets.RAILWAY_PROJECT_ID }} --environment production --service ${{ secrets.RAILWAY_SERVICE_ID }}
+           railway up --ci --environment production --service ${{ secrets.RAILWAY_SERVICE_ID }} -- --project ${{ secrets.RAILWAY_PROJECT_ID }}
 
       - name: Notify Success
         run: echo "Production deployment successful!"
