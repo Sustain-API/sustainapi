@@ -41,16 +41,13 @@ jobs:
         run: npm install -g @railway/cli
 
       
-      - name: Link Railway Project
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          railway link -p ${{ secrets.RAILWAY_PROJECT_ID }}
-
       - name: Deploy to Railway Production
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: railway up
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT: production
+        run: |
+          railway up --ci
 
       - name: Notify Success
         run: echo "Production deployment successful!"
