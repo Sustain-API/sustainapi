@@ -40,11 +40,14 @@ jobs:
       - name: Install Railway CLI via npm
         run: npm install -g @railway/cli
 
+      
       - name: Link Railway Project
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
         run: |
-          railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway link --project-id ${{ secrets.RAILWAY_PROJECT_ID }}
 
       - name: Deploy to Railway Production
         env:
@@ -52,6 +55,8 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
         run: |
           railway up --ci
 
@@ -73,16 +78,13 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway link --project ${{ secrets.RAILWAY_STAGING_PROJECT_ID }}
+          railway link --project-id ${{ secrets.RAILWAY_STAGING_PROJECT_ID }}
 
       - name: Deploy to Railway Staging
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway up --ci
+          railway up --project ${{ secrets.RAILWAY_STAGING_PROJECT_ID }} --env staging
 
       - name: Notify Success
         run: echo "Staging deployment successful!"
